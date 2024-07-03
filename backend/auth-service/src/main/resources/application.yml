@@ -1,0 +1,34 @@
+server:
+  address: ${SERVER_ADDRESS:localhost}
+  port: ${PORT:9006}
+  servlet:
+    context-path: ${SERVER_CONTEXT_PATH:/api/v1}
+
+eureka:
+  instance:
+    hostname: ${APPLICATION_NAME:auth-service}
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_DEFAULT_ZONE:http://localhost:9001/api/eureka/}
+
+spring:
+  application:
+    name: ${APPLICATION_NAME:auth-service}
+  cloud:
+    openfeign:
+      client:
+        config:
+          user:
+            url: ${USER_SERVICE_URL:http://localhost:9005/api/v1}
+          user-database:
+            url: ${DATABASE_API_SERVICE_URL:http://localhost:8080/api/v1}
+          secureCode:
+            url: ${DATABASE_API_SERVICE_URL:http://localhost:8080/api/v1}
+          operation:
+            url: ${OPERATION_SERVICE:http://localhost:9004/api/v1}
+security:
+  jwt:
+    secret: ${SECURITY_JWT_SECRET:"583773d0820a96e7b12c0bc72b0e132224552a82ad95953778bfacfa7d5a4f1a"}
+    access: ${SECURITY_JWT_ACCESS_EXPIRED:3600000}
+    shared: ${SECURITY_SHARED_TOKEN_EXPIRED:3600000}
+    refresh: ${SECURITY_JWT_REFRESH_EXPIRED:2592000000}

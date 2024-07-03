@@ -1,0 +1,16 @@
+server:
+  address: ${SERVER_ADDRESS:localhost}
+  port: ${PORT:9012}
+  servlet:
+    context-path: ${SERVER_CONTEXT_PATH:/api}
+
+spring:
+  application:
+    name: ${APPLICATION_NAME:config-service}
+
+eureka:
+  instance:
+    hostname: ${APPLICATION_NAME:config-service}
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_DEFAULT_ZONE:http://localhost:9001/api/eureka/}

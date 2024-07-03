@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div style="background-color: blue">
+    <h1 th:text="${title}"></h1>
+</div>
+<div style="background-color: blue">
+    <p th:text="${mainText}"></p>
+    <p th:text="'Your verification code is ' + ${code}"></p>
+</div>
+</body>
+</html>

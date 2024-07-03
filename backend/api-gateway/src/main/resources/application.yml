@@ -1,0 +1,48 @@
+server:
+  address: ${SERVER_ADDRESS:localhost}
+  port: ${PORT:9002}
+  servlet:
+    context-path: ${SERVER_CONTEXT_PATH:/api}
+  ssl:
+    enabled: true
+    key-alias: glos-backend
+    key-store: classpath:ssl/glos_backend.pfx
+    key-store-type: PKCS12
+    key-store-password: "T0}%{oHzy*onW%iGzJPt"
+    key-password: "T0}%{oHzy*onW%iGzJPt"
+
+eureka:
+  instance:
+    hostname: ${APPLICATION_NAME:api-gateway}
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_DEFAULT_ZONE:http://localhost:9001/api/eureka/}
+
+spring:
+  application:
+    name: ${APPLICATION_NAME:api-gateway}
+  config:
+    import:
+      - classpath:/routes.yml
+  cloud:
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-headers: '*'
+            allowed-methods: '*'
+            allow-credentials: true
+            allowed-origin-patterns:
+              - '*'
+            maxAge: 30
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+    openfeign:
+      client:
+        config:
+          auth:
+            url: ${AUTH_SERVICE_URL:http://localhost:9006/api/v1}

@@ -1,0 +1,28 @@
+server:
+  address: ${SERVER_ADDRESS:localhost}
+  port: ${PORT:9007}
+  servlet:
+    context-path: ${SERVER_CONTEXT_PATH:/api/v1}
+
+eureka:
+  instance:
+    hostname: ${APPLICATION_NAME:comment-service}
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_DEFAULT_ZONE:http://localhost:9001/api/eureka/}
+
+spring:
+  application:
+    name: ${APPLICATION_NAME:comment-service}
+  cloud:
+    openfeign:
+      client:
+        config:
+          comment:
+            url: "${DATABASE_API_SERVICE_URL:http://localhost:8080/api/v1}/comments"
+          users:
+            url: "${DATABASE_API_SERVICE_URL:http://localhost:8080/api/v1}/users"
+          files:
+            url: "${DATABASE_API_SERVICE_URL:http://localhost:8080/api/v1}/files"
+          repositories:
+            url: "${DATABASE_API_SERVICE_URL:http://localhost:8080/api/v1}/repositories"

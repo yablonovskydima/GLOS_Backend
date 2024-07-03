@@ -1,0 +1,31 @@
+server:
+  address: ${SERVER_ADDRESS:localhost}
+  port: ${PORT:9011}
+  servlet:
+    context-path: ${SERVER_CONTEXT_PATH:/api/v1}
+
+spring:
+  application:
+    name: ${APPLICATION_NAME:access-service}
+  cloud:
+    openfeign:
+      client:
+        config:
+          accessTypes:
+            url: ${DATABASE_API_SERVICE_URL:http://localhost:8080/api/v1}/access-types
+          user:
+            url: ${DATABASE_API_SERVICE_URL:http://localhost:8080/api/v1}
+          group:
+            url: ${DATABASE_API_SERVICE_URL:http://localhost:8080/api/v1}
+          files:
+            url: ${DATABASE_API_SERVICE_URL:http://localhost:8080/api/v1}/files
+          repositories:
+            url: ${DATABASE_API_SERVICE_URL:http://localhost:8080/api/v1}/repositories
+
+
+eureka:
+  instance:
+    hostname: ${APPLICATION_NAME:access-service}
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_DEFAULT_ZONE:http://localhost:9001/api/eureka/}

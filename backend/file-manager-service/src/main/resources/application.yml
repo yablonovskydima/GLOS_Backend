@@ -1,0 +1,30 @@
+server:
+  address: ${SERVER_ADDRESS:localhost}
+  port: ${PORT:9010}
+  servlet:
+    context-path: ${SERVER_CONTEXT_PATH:/api/v1}
+
+spring:
+  application:
+    name: ${APPLICATION_NAME:file-manager-service}
+  cloud:
+    openfeign:
+      client:
+        config:
+          files:
+            url: "${DATABASE_API_SERVICE_URL:http://localhost:8080/api/v1}/files"
+          repositories:
+            url: "${DATABASE_API_SERVICE_URL:http://localhost:8080/api/v1}/repositories"
+          fileStorage:
+            url : "${STORAGE_SERVICE:http://localhost:9009/api/v1}"
+          repositoryStorage:
+            url: "${STORAGE_SERVICE:http://localhost:9009/api/v1}/storage/repositories"
+          tags:
+            url: "${DATABASE_API_SERVICE_URL:http://localhost:8080/api/v1}/tags"
+
+eureka:
+  instance:
+    hostname: ${APPLICATION_NAME:file-manager-service}
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_DEFAULT_ZONE:http://localhost:9001/api/eureka/}

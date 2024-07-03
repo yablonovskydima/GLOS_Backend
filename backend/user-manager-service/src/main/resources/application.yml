@@ -1,0 +1,30 @@
+server:
+  address: ${SERVER_ADDRESS:localhost}
+  port: ${PORT:9005}
+  servlet:
+    context-path: ${SERVER_CONTEXT_PATH:/api/v1}
+
+eureka:
+  instance:
+    hostname: ${APPLICATION_NAME:user-manager-service}
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_DEFAULT_ZONE:http://localhost:9001/api/eureka/}
+
+spring:
+  application:
+    name: ${APPLICATION_NAME:user-manager-service}
+  cloud:
+    openfeign:
+      client:
+        config:
+          user:
+            url: "${DATABASE_API_SERVICE_URL:http://localhost:8080/api/v1}/users"
+          group:
+            url: "${DATABASE_API_SERVICE_URL:http://localhost:8080/api/v1}/groups"
+          roles:
+            url: "${DATABASE_API_SERVICE_URL:http://localhost:8080/api/v1}/roles"
+          storage:
+            url: "${STORAGE_SERVICE:http://localhost:9009/api/v1/storage/buckets}"
+          notification:
+            url: "${NOTIFICATION_SERVICE:http://localhost:9003/api/v1}"

@@ -1,0 +1,22 @@
+server:
+  address: ${SERVER_ADDRESS:localhost}
+  port: ${SERVER_PORT:9009}
+  servlet:
+    context-path: ${SERVER_CONTEXT_PATH:/api/v1}
+
+spring:
+  application:
+    name: ${APPLICATION_NAME:file-storage-service}
+
+eureka:
+  instance:
+    hostname: ${APPLICATION_NAME:file-storage-service}
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_DEFAULT_ZONE:http://localhost:9001/api/eureka/}
+
+minio:
+  url: ${MINIO_URL:http://localhost:9000}
+  access-key: ${MINIO_ACCESS_KEY:minioadmin}
+  secret-key: ${MINIO_SECRET_KEY:minioadmin}
+  shared-expiry: ${MINIO_EXPIRY:7d}

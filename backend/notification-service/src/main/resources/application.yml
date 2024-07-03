@@ -1,0 +1,27 @@
+server:
+  address: ${SERVER_ADDRESS:localhost}
+  port: ${PORT:9003}
+  servlet:
+    context-path: ${SERVER_CONTEXT_PATH:/api/v1}
+
+spring:
+  application:
+    name: ${APPLICATION_NAME:notification-service}
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL_USERNAME:global.storage.info@gmail.com}
+    password: ${EMAIL_PASSWORD:tbhboaibjuvjvdpf}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+eureka:
+  instance:
+    hostname: ${APPLICATION_NAME:notification-service}
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_DEFAULT_ZONE:http://localhost:9001/api/eureka/}

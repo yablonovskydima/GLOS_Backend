@@ -1,0 +1,269 @@
+version: "3.5"
+
+networks:
+  glos-app-network:
+    driver: bridge
+
+services:
+  eureka-server:
+    build:
+      context: .
+      dockerfile: ./eureka-service/Dockerfile
+    image: eureka-server
+    container_name: eureka-server
+    restart: always
+    ports:
+      - "9001:9001"
+    networks:
+      - glos-app-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://eureka-server:9001/api/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    environment:
+      SERVER_ADDRESS: eureka-server
+      SERVER_PORT: 9001
+      SERVER_CONTEXT_PATH: /api
+      EUREKA_CLIENT_DEFAULT_ZONE: http://eureka-server:9001/api/eureka
+  api-gateway:
+    build:
+      context: .
+      dockerfile: ./api-gateway/Dockerfile
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    image: api-gateway
+    container_name: api-gateway
+    restart: always
+    ports:
+      - "9002:9002"
+    networks:
+      - glos-app-network
+    environment:
+      SERVER_ADDRESS: api-gateway
+      SERVER_PORT: 9002
+      SERVER_CONTEXT_PATH: /api
+      EUREKA_CLIENT_DEFAULT_ZONE: http://eureka-server:9001/api/eureka/
+  file-manager-service:
+    build:
+      context: .
+      dockerfile: ./file-manager-service/Dockerfile
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    image:
+      file-manager-service
+    container_name: file-manager-service
+    restart: always
+    ports:
+      - "9010:9010"
+    networks:
+      - glos-app-network
+    environment:
+      SERVER_ADDRESS: file-manager-service
+      SERVER_PORT: 9010
+      SERVER_CONTEXT_PATH : /api/v1
+      EUREKA_CLIENT_DEFAULT_ZONE: http://eureka-server:9001/api/eureka/
+  access-service:
+    build:
+      context: .
+      dockerfile: ./access-service/Dockerfile
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    image:
+      access-service
+    container_name: access-service
+    restart: always
+    ports:
+      - "9011:9011"
+    networks:
+      - glos-app-network
+    environment:
+      SERVER_ADDRESS: access-service
+      SERVER_PORT: 9011
+      SERVER_CONTEXT_PATH: /api/v1
+      EUREKA_CLIENT_DEFAULT_ZONE: http://eureka-server:9001/api/eureka/
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: ./notification-service/Dockerfile
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    image:
+      notification-service
+    container_name: notification-service
+    restart: always
+    ports:
+      - "9003:9003"
+    networks:
+      - glos-app-network
+    environment:
+      SERVER_ADDRESS: notification-service
+      SERVER_PORT: 9003
+      SERVER_CONTEXT_PATH: /api/v1
+      EUREKA_CLIENT_DEFAULT_ZONE: http://eureka-server:9001/api/eureka/
+
+  database-api-service:
+    build:
+      context: .
+      dockerfile: ./database-api-service/Dockerfile
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    image:
+      database-api-service
+    container_name: database-api-service
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - glos-app-network
+    environment:
+      SERVER_ADDRESS: database-api-service
+      SERVER_PORT: 8080
+      SERVER_CONTEXT_PATH: /api/v1
+      EUREKA_CLIENT_DEFAULT_ZONE: http://eureka-server:9001/api/eureka/
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/glos_database
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+
+  db:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: always
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    environment:
+      MYSQL_DATABASE: glos_database
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_USER: root
+      EUREKA_CLIENT_DEFAULT_ZONE: http://eureka-server:9001/api/eureka/
+    ports:
+      - "3306:3306"
+    networks:
+      - glos-app-network
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    networks:
+      - glos-app-network
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    command: server ~/minio --console-address :9097
+    ports:
+      - '9097:9097'
+      - '9000:9000'
+    volumes:
+      - ./minio-data:/minio
+
+  user-manager-service:
+    build:
+      context: .
+      dockerfile: ./user-manager-service/Dockerfile
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    image: user-manager-service
+    container_name: user-manager-service
+    restart: always
+    ports:
+      - "9005:9005"
+    networks:
+      - glos-app-network
+    environment:
+      SERVER_ADDRESS: user-manager-service
+      SERVER_PORT: 9005
+      SERVER_CONTEXT_PATH: /api/v1
+      EUREKA_CLIENT_DEFAULT_ZONE: http://eureka-server:9001/api/eureka/
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: ./auth-service/Dockerfile
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    image: auth-service
+    container_name: auth-service
+    restart: always
+    ports:
+      - "9006:9006"
+    networks:
+      - glos-app-network
+    environment:
+      SERVER_ADDRESS: auth-service
+      SERVER_PORT: 9006
+      SERVER_CONTEXT_PATH: /api/v1
+      EUREKA_CLIENT_DEFAULT_ZONE: http://eureka-server:9001/api/eureka/
+
+  comment-service:
+    build:
+      context: .
+      dockerfile: ./comment-service/Dockerfile
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    image: comment-service
+    container_name: comment-service
+    restart: always
+    ports:
+      - "9007:9007"
+    networks:
+      - glos-app-network
+    environment:
+      SERVER_ADDRESS: comment-service
+      SERVER_PORT: 9007
+      SERVER_CONTEXT_PATH: /api/v1
+      EUREKA_CLIENT_DEFAULT_ZONE: http://eureka-server:9001/api/eureka/
+
+  file-storage-service:
+    build:
+      context: .
+      dockerfile: ./file-storage-service/Dockerfile
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    image: file-storage-service
+    container_name: file-storage-service
+    restart: always
+    ports:
+      - "9009:9009"
+    networks:
+      - glos-app-network
+    environment:
+      SERVER_ADDRESS: file-storage-service
+      SERVER_PORT: 9009
+      SERVER_CONTEXT_PATH: /api/v1
+      EUREKA_CLIENT_DEFAULT_ZONE: http://eureka-server:9001/api/eureka/
+      MINIO_URL: http://localhost:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+      MINIO_EXPIRY: 7d
+
+  operation-service:
+    build:
+      context: .
+      dockerfile: ./operation-service/Dockerfile
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    image: operation-service
+    container_name: operation-service
+    restart: always
+    ports:
+      - "9004:9004"
+    networks:
+      - glos-app-network
+    environment:
+      SERVER_ADDRESS: operation-service
+      SERVER_PORT: 9004
+      SERVER_CONTEXT_PATH: /api/v1
+      EUREKA_CLIENT_DEFAULT_ZONE: http://eureka-server:9001/api/eureka/

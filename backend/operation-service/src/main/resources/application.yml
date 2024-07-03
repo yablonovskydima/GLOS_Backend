@@ -1,0 +1,32 @@
+server:
+  address: ${SERVER_ADDRESS:localhost}
+  port: ${SERVER_PORT:9004}
+  servlet:
+    context-path: ${SERVER_CONTEXT_PATH:/api/v1}
+
+eureka:
+  instance:
+    hostname: ${APPLICATION_NAME:operation-service}
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_DEFAULT_ZONE:http://localhost:9001/api/eureka/}
+
+spring:
+  application:
+    name: ${APPLICATION_NAME:operation-service}
+  data:
+    mongodb:
+      username: ${MONGODB_USERNAME:glosadmin}
+      password: ${MONGODB_PASSWORD:glosadmin}
+      database: ${MONGODB_DATABASE:operationdb}
+      uri: ${MONGODB_URL:mongodb://glosadmin:glosadmin@16.16.126.56:27017}
+  cloud:
+    openfeign:
+      client:
+        config:
+          notification:
+            url: "${NOTIFICATION_SERVICE:http://localhost:9003/api/v1}"
+          user:
+            url: "${USER_SERVICE_URL:http://localhost:9005/api/v1}"
+          auth:
+            url: "${AUTH_SERVICE:http://localhost:9006/api/v1}"
